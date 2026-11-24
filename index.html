@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Magic</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#080808;color:#f8f2e8;
+ font-family:Georgia,serif;text-align:center;
+}
+header{padding:25px;color:#d9b66b;letter-spacing:4px}
+h1{font-size:38px;color:#e4c477}
+h2{color:#e4c477}
+p{line-height:1.7;color:#c9c0b2}
+main{max-width:600px;margin:auto;padding:18px}
+.card{
+ background:#15130f;border:1px solid #80683d;
+ border-radius:18px;padding:25px;margin:20px 0;
+ box-shadow:0 0 25px #b18a3515;
+}
+input,textarea,select{
+ width:100%;padding:14px;margin:9px 0;
+ background:#090909;color:white;
+ border:1px solid #8d7549;border-radius:9px;
+ font-size:16px;
+}
+button{
+ background:linear-gradient(120deg,#a77b32,#f0d58b);
+ color:#100d07;border:0;border-radius:30px;
+ padding:13px 24px;font-size:16px;
+ font-weight:bold;margin:9px;cursor:pointer;
+}
+button:hover{opacity:.85}
+.gold{color:#e4c477}
+#surprise{display:none}
+#photo{max-width:100%;max-height:300px;border-radius:15px;margin:15px auto}
+#generated{word-break:break-all;color:#e4c477}
+.hidden{display:none}
+footer{padding:30px;color:#9d8d70;font-size:13px}
+</style>
+</head>
+<body>
+<header>✦ BIRTHDAY MAGIC ✦</header>
+
+<main>
+<section id="creator">
+ <h1>Make A Birthday Wish</h1>
+ <p>Create a beautiful surprise for someone special.</p>
+
+ <div class="card">
+  <h2>Create Your Surprise</h2>
+  <input id="name" placeholder="Birthday person's name">
+  <input id="relation" placeholder="Relationship (Friend, Sister...)">
+  <input id="age" type="number" placeholder="Age (optional)">
+  <textarea id="message" placeholder="Write your special birthday message..."></textarea>
+
+  <label class="gold">Choose language</label>
+  <select id="language">
+   <option value="both">Tamil + English</option>
+   <option value="en">English</option>
+   <option value="ta">Tamil</option>
+  </select>
+
+  <label class="gold">Add a photo (optional)</label>
+  <input type="file" id="photoInput" accept="image/*">
+  <img id="photo" class="hidden">
+
+  <label class="gold">Add your own music (optional)</label>
+  <input type="file" id="musicInput" accept="audio/*">
+
+  <button onclick="create()">Create Birthday Surprise</button>
+ </div>
+</section>
+
+<section id="surprise">
+ <div class="card">
+  <p class="gold">A SPECIAL DAY FOR YOU</p>
+  <h1 id="birthdayName"></h1>
+  <p id="birthdayRelation"></p>
+  <h2>Happy Birthday!</h2>
+  <h2>இனிய பிறந்தநாள் வாழ்த்துக்கள்!</h2>
+  <p id="birthdayAge"></p>
+  <img id="finalPhoto" class="hidden">
+  <p id="birthdayMessage"></p>
+  <button onclick="openGift()">Open Your Gift 🎁</button>
+  <div id="gift" class="hidden">
+   <h1>✦ 🎂 ✦</h1>
+   <h2>May your dreams come true!</h2>
+   <p>உன் வாழ்க்கை மகிழ்ச்சியால் நிறையட்டும்!</p>
+   <p>Wishing you endless happiness and beautiful memories.</p>
+  </div>
+  <button onclick="share()">Share Birthday Website</button>
+  <p id="generated"></p>
+ </div>
+ <button onclick="location.href=location.pathname">Create Another Birthday</button>
+</section>
+</main>
+
+<footer>Made with love · Birthday Magic © 2026</footer>
+
+<script>
+let photoData="";
+let musicURL="";
+
+document.getElementById("photoInput").onchange=function(){
+ const file=this.files[0];
+ if(!file)return;
+ const reader=new FileReader();
+ reader.onload=e=>{
+  photoData=e.target.result;
+  const p=document.getElementById("photo");
+  p.src=photoData;p.classList.remove("hidden");
+ };
+ reader.readAsDataURL(file);
+};
+
+document.getElementById("musicInput").onchange=function(){
+ if(this.files[0]){
+  musicURL=URL.createObjectURL(this.files[0]);
+  const audio=new Audio(musicURL);
+  audio.loop=true;
+  audio.play().catch(()=>{});
+ }
+};
+
+function create(){
+ const name=document.getElementById("name").value.trim();
+ if(!name){alert("Please enter a name!");return;}
+ const data={
+  name,
+  relation:document.getElementById("relation").value,
+  age:document.getElementById("age").value,
+  message:document.getElementById("message").value,
+  language:document.getElementById("language").value
+ };
+ showBirthday(data);
+}
+
+function showBirthday(d){
+ document.getElementById("creator").style.display="none";
+ document.getElementById("surprise").style.display="block";
+ document.getElementById("birthdayName").textContent=d.name;
+ document.getElementById("birthdayRelation").textContent=d.relation;
+ document.getElementById("birthdayAge").textContent=d.age?"Celebrating "+d.age+" wonderful years!":"";
+ document.getElementById("birthdayMessage").textContent=d.message;
+ if(photoData){
+  const img=document.getElementById("finalPhoto");
+  img.src=photoData;img.classList.remove("hidden");
+ }
+ if(d.language==="ta")
+  document.querySelector("#surprise h2").textContent="இனிய பிறந்தநாள் வாழ்த்துக்கள்!";
+ else if(d.language==="en")
+  document.querySelector("#surprise h2").textContent="Happy Birthday!";
+}
+
+function openGift(){
+ document.getElementById("gift").classList.remove("hidden");
+}
+
+function share(){
+ const d={
+  name:document.getElementById("birthdayName").textContent,
+  relation:document.getElementById("birthdayRelation").textContent,
+  age:document.getElementById("birthdayAge").textContent.replace("Celebrating ","").replace(" wonderful years!",""),
+  message:document.getElementById("birthdayMessage").textContent,
+  language:document.getElementById("language").value
+ };
+ const url=new URL(location.href);
+ Object.entries(d).forEach(([k,v])=>url.searchParams.set(k,v));
+ const link=url.href;
+ document.getElementById("generated").textContent=link;
+ if(navigator.share){
+  navigator.share({title:"Birthday Surprise",url:link}).catch(()=>{});
+ }else if(navigator.clipboard){
+  navigator.clipboard.writeText(link).then(()=>alert("Link copied!"));
+ }else{
+  alert("Copy the link shown below.");
+ }
+}
+
+const params=new URLSearchParams(location.search);
+if(params.has("name")){
+ showBirthday({
+  name:params.get("name"),
+  relation:params.get("relation")||"",
+  age:params.get("age")||"",
+  message:params.get("message")||"",
+  language:params.get("language")||"both"
+ });
+}
+</script>
+</body>
+</html>
